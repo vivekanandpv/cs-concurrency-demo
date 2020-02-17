@@ -11,22 +11,28 @@ namespace ConcurrencyDemo
     {
         static void Main(string[] args)
         {
-            //  Internally, tasks create a state machine. So they can
-            //  return values. This is not directly possible using the
-            //  Threads, where we should use shared state (recall that a thread
-            //  cannot start a delegate that returns a value). This, as we
-            //  know brings in complexity of dealing with thread safety issues.
+            DoStuff();
+            Console.WriteLine("Main Continue");
 
-            var t = new Task<int>(() =>
+            Thread.Sleep(1000);
+            Console.WriteLine("Main Finish");
+        }
+
+        static async Task DoStuff()
+        {
+            Console.WriteLine(await GetIntValueAsync());
+        }
+
+        static async Task<int> GetIntValueAsync()
+        {
+            var task = new Task<int>(() =>
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 return 100;
             });
 
-            t.Start();
-            
-            t.Wait();
-            Console.WriteLine(t.Result);
+            task.Start();
+            return await task;
         }
     }
 }
