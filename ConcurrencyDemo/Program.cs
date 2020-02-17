@@ -39,6 +39,12 @@ namespace ConcurrencyDemo
         {
             for (int i = 0; i < 10; i++)
             {
+                if (i == 2)
+                {
+                    //  while this sleeps, others continue and probably finish,
+                    //  but the process doesn't end until all the threads are finished
+                    Thread.Sleep(1000);
+                }
                 Console.WriteLine($"Method implementation (main thread), Counter: {i}");
             }
         }
