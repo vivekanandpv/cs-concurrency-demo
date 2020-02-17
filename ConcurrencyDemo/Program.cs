@@ -41,7 +41,7 @@ namespace ConcurrencyDemo
         {
             var task = new Task<int>(() =>
             {
-                Thread.Sleep(500);
+                Task.Delay(500);
                 throw new Exception("Task throws exception");
             });
 
