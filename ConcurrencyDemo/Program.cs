@@ -9,9 +9,13 @@ namespace ConcurrencyDemo
 {
     class Program
     {
+        
+        
         static void Main(string[] args)
         {
+
             DoStuff();
+            
             Console.WriteLine("Main Continue");
 
             Thread.Sleep(1000);
@@ -20,7 +24,17 @@ namespace ConcurrencyDemo
 
         static async Task DoStuff()
         {
-            Console.WriteLine(await GetIntValueAsync());
+            //  When an exception happens in a task,
+            //  it will be rethrown to the method that is awaiting
+            //  either task.Wait() or task.Result or await
+            try
+            {
+                Console.WriteLine(await GetIntValueAsync());
+            }
+            catch (Exception ae)
+            {
+                Console.WriteLine(ae);
+            }
         }
 
         static async Task<int> GetIntValueAsync()
@@ -28,7 +42,7 @@ namespace ConcurrencyDemo
             var task = new Task<int>(() =>
             {
                 Thread.Sleep(500);
-                return 100;
+                throw new Exception("Task throws exception");
             });
 
             task.Start();
