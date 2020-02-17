@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,36 +12,27 @@ namespace ConcurrencyDemo
     {
         static void Main(string[] args)
         {
-            var thread1 = new Thread(delegate()
+            var thread1 = new Thread(delegate ()
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    Console.WriteLine($"Anonymous function implementation, Counter: {i}");
-                }
-            });
-            var thread2 = new Thread(() =>
+                Console.WriteLine($"Managed Thread Id for the current thread: " +
+                                      $"{Thread.CurrentThread.ManagedThreadId}" +
+                                      $"{Environment.NewLine}" +
+                                      $"Thread Name: {Thread.CurrentThread.Name}" +
+                                      $"{Environment.NewLine}" +
+                                      $"Priority: {Thread.CurrentThread.Priority}" +
+                                      $"{Environment.NewLine}" +
+                                      $"State: {Thread.CurrentThread.ThreadState}" +
+                                      $"{Environment.NewLine}" +
+                                      $"From thread pool?: {Thread.CurrentThread.IsThreadPoolThread}");
+
+            })
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    Console.WriteLine($"Delegate implementation, Counter: {i}");
-                }
-            });
-
-            thread1.Name = "First Thread";
-            thread2.Name = "Second Thread";
-
+                Name = "First Thread"
+            };
             thread1.Start();
-            thread2.Start();
 
-            ExecuteTask();
-        }
-
-        private static void ExecuteTask()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine($"Method implementation (main thread), Counter: {i}");
-            }
+            Thread.Sleep(1000);
+            Console.WriteLine($"First thread after one second: Alive? {thread1.IsAlive}, State: {thread1.ThreadState}");
         }
     }
 }
