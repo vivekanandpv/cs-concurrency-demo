@@ -9,42 +9,23 @@ namespace ConcurrencyDemo
 {
     class Program
     {
-        private static string result1;
-        private static string result2;
-        private static string finalResult;
         static void Main(string[] args)
         {
-            var tApi1 = new Thread(() =>
+            var chainedTask = Task.Run(() =>
             {
-                Thread.Sleep(500);
-                result1 = Api1("Initial");
-                Console.WriteLine("Api1 completed");
+                Task.Delay(1000).Wait();
+                return Api1("Initial");
+            }).ContinueWith((key) =>
+            {
+                Task.Delay(1000).Wait();
+                return Api2(key.Result);
+            }).ContinueWith((key) =>
+            {
+                Task.Delay(1000).Wait();
+                return Api3(key.Result);
             });
 
-            var tApi2 = new Thread(() =>
-            {
-                Thread.Sleep(500);
-                result2 = Api2(result1);
-                Console.WriteLine("Api2 completed");
-            });
-
-            var tApi3 = new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                finalResult = Api3(result2);
-                Console.WriteLine("Api3 completed");
-            });
-
-            tApi1.Start();
-            tApi1.Join();
-
-            tApi2.Start();
-            tApi2.Join();
-
-            tApi3.Start();
-            tApi3.Join();
-
-            Console.WriteLine(finalResult);
+            Console.WriteLine($"Result: {chainedTask.Result}");
         }
 
         static string Api1(string key)
