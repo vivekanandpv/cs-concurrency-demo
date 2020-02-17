@@ -11,26 +11,22 @@ namespace ConcurrencyDemo
     {
         static void Main(string[] args)
         {
-            //  Threads are low-level API. With power comes complexity.
-            //  Tasks are higher level abstractions over threads that are
-            //  most suited for I/O bound loads.
-            //  Internally, tasks use ThreadPool hence they are efficient
-            //  Working with the tasks is almost like working with threads
-            //  but much easier
+            //  Internally, tasks create a state machine. So they can
+            //  return values. This is not directly possible using the
+            //  Threads, where we should use shared state (recall that a thread
+            //  cannot start a delegate that returns a value). This, as we
+            //  know brings in complexity of dealing with thread safety issues.
 
-            Task t = new Task(() =>
+            var t = new Task<int>(() =>
             {
                 Thread.Sleep(1000);
-                Console.WriteLine("Hi there!");
+                return 100;
             });
 
             t.Start();
             
-            //  As said already, tasks use ThreadPool, which spawns up
-            //  background threads that are abandoned as soon as the Main Thread
-            //  ends. So don't forget to Wait (similar to thread.Join())
-
             t.Wait();
+            Console.WriteLine(t.Result);
         }
     }
 }
