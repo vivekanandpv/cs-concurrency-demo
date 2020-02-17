@@ -11,32 +11,41 @@ namespace ConcurrencyDemo
     {
         static void Main(string[] args)
         {
-            //  Creation of the thread is a costly process
-            //  Every thread has its own stack and context switching overheads as well
-            //  If the developer can keep on creating threads, then the overhead can outweigh
-            //  the performance benefit that could be gained. And the complexity of the application
-            //  is yet another issue to tackle with.
-
-            //  In this light, ThreadPool is a convenient abstraction mechanism which recycles the threads
-            //  One can consider the ThreadPool like a taxi service. After every trip, the taxi is back to
-            //  serve the next customer. As this has to be managed by the CLR, there is not much low-level
-            //  API available.
-
             ThreadPool.QueueUserWorkItem((state) =>
             {
-                Console.WriteLine($"Background Thread? {Thread.CurrentThread.IsBackground}" +
-                                  $"{Environment.NewLine}" +
-                                  $"From ThreadPool? {Thread.CurrentThread.IsThreadPoolThread}" +
-                                  $"{Environment.NewLine}" +
-                                  $"State: {state.ToString()}");
+                Console.WriteLine($"State: {state}");
+
             }, DateTime.UtcNow);
 
-            //  Since threads from the thread pool are background threads,
-            //  the process finishes when the foreground thread (i.e., the Main Thread)
-            //  exits. Therefore we delay the completion of Main Thread
-            //  Even then, this behaviour is not predictable. Sometimes, the new thread
-            //  might finish earlier than the main thread. In which case we can see the
-            //  output to the console.
+            //  Minimum threads a thread pool can contain is usually the number of CPU cores
+            //  Environment.ProcessorCount
+
+            int minWorkerThreads = 0;
+            int minCompletionPortThreads = 0;
+            
+
+            ThreadPool.GetMinThreads(out minWorkerThreads, out minCompletionPortThreads);
+
+
+            //  Max is usually in thousands. On my machine, I got 2047 and 1000
+            int maxWorkerThreads = 0;
+            int maxCompletionPortThreads = 0;
+
+            ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+
+
+            //  As said earlier, it is a good idea to restrict the threads a pool can have
+            //  CPU cores * 2 (sometimes 4) is a healthy count in most circumstances
+            //ThreadPool.SetMaxThreads(minWorkerThreads * 2, minCompletionPortThreads * 2);
+
+            //  In some cases, particularly under the scarce resources, you can consider 
+            //ThreadPool.SetMinThreads(...);
+            //  Please also note that when demand is low, the actual number of thread pool
+            //  threads can fall below the minimum values.
+
+            Console.WriteLine($"Min: {minWorkerThreads} & {minCompletionPortThreads}");
+            Console.WriteLine($"Max: {maxWorkerThreads} & {maxCompletionPortThreads}");
+
             Thread.Sleep(1000);
         }
     }
