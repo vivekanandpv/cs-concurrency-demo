@@ -9,57 +9,36 @@ namespace ConcurrencyDemo
 {
     class Program
     {
+        //  Threads are autonomous execution streams, which may have shared state
+        //  So, the exception handling is specific to the thread that caused the exception
+        //  A general error is to anticipate the exception handling in a different thread.
+        //  Exceptions do not permeate to the Main Thread as beginners usually think.
+
         private static string result1;
-        private static string result2;
-        private static string finalResult;
+        
         static void Main(string[] args)
         {
             var tApi1 = new Thread(() =>
             {
-                Thread.Sleep(500);
-                result1 = Api1("Initial");
-                Console.WriteLine("Api1 completed");
-            });
-
-            var tApi2 = new Thread(() =>
-            {
-                Thread.Sleep(500);
-                result2 = Api2(result1);
-                Console.WriteLine("Api2 completed");
-            });
-
-            var tApi3 = new Thread(() =>
-            {
-                Thread.Sleep(1000);
-                finalResult = Api3(result2);
-                Console.WriteLine("Api3 completed");
+                try
+                {
+                    result1 = Api1("Initial");
+                    Console.WriteLine("Api1 completed");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception caught in the thread: {e.Message}");
+                }
             });
 
             tApi1.Start();
-            tApi1.Join();
-
-            tApi2.Start();
-            tApi2.Join();
-
-            tApi3.Start();
-            tApi3.Join();
-
-            Console.WriteLine(finalResult);
+            Console.WriteLine("Can I see this?");
         }
 
         static string Api1(string key)
         {
-            return "Key1";
+            throw new NotImplementedException("Not yet available");
         }
 
-        static string Api2(string key)
-        {
-            return "Key2";
-        }
-
-        static string Api3(string key)
-        {
-            return "Finally there!";
-        }
     }
 }
