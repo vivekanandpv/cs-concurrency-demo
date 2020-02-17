@@ -18,11 +18,21 @@ namespace ConcurrencyDemo
             {
                 Thread t = new Thread(() =>
                 {
-                    //  the effect is more pronounced if the limit is set higher
-                    for (int j = 0; j < 10000; j++)
+                    //  Any variable created within the thread is local to it
+                    //  This cannot be mutated or changed by other threads
+                    //  Therefore the j will always be 10000 for every thread
+                    //  Every thread's j is different by the way!
+
+                    var j = 0;  
+
+                    while(j < 10000)
                     {
-                        Counter++;  //  This is not an atomic operation!
+                        Increment();
+                        Decrement();
+                        j++;
                     }
+
+                    Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} exited after {j} iterations");
                 });
 
                 t.Start();
@@ -36,8 +46,18 @@ namespace ConcurrencyDemo
                 thread.Join();
             }
 
-            //  Result is unpredictable and that is the root of all evil
+            //  Counter is the shared resource and is prone to thread synchronization issues
             Console.WriteLine($"Counter: {Counter}");
+        }
+
+        static void Increment()
+        {
+            Counter++;
+        }
+
+        static void Decrement()
+        {
+            Counter--;
         }
     }
 }
