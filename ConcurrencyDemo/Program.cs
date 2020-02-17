@@ -39,10 +39,5 @@ namespace ConcurrencyDemo
             //  Result is unpredictable and that is the root of all evil
             Console.WriteLine($"Counter: {Counter}");
         }
-
-        static void Increment()
-        {
-            
-        }
     }
 }
