@@ -39,6 +39,10 @@ namespace ConcurrencyDemo
         {
             for (int i = 0; i < 10; i++)
             {
+                if (i == 7)
+                {
+                    throw new Exception("Main thread throws exception");
+                }
                 Console.WriteLine($"Method implementation (main thread), Counter: {i}");
             }
         }
