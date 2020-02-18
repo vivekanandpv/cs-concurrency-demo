@@ -10,14 +10,14 @@ namespace ConcurrencyDemo
 {
     class Program
     {
-        private static ReaderWriterLockSlim readerWriterLockSlim = new ReaderWriterLockSlim();
+        private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(4);
         static void Main(string[] args)
         {
             List<Thread> threads = new List<Thread>();
 
             for (int i = 0; i < 10; i++)
             {
-                threads.Add(new Thread(WritePage));
+                threads.Add(new Thread(Foo));
             }
 
             foreach (var thread in threads)
@@ -26,33 +26,18 @@ namespace ConcurrencyDemo
             }
         }
 
-        static void ReadPage()
+        static void Foo()
         {
             try
             {
-                readerWriterLockSlim.EnterReadLock();
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is reading");
-                Thread.Sleep(300);
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit reading");
+                semaphoreSlim.Wait();
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is entering");
+                Thread.Sleep(1000);
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit");
             }
             finally
             {
-                readerWriterLockSlim.ExitReadLock();
-            }
-        }
-
-        static void WritePage()
-        {
-            try
-            {
-                readerWriterLockSlim.EnterWriteLock();
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is writing");
-                Thread.Sleep(300);
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit writing");
-            }
-            finally
-            {
-                readerWriterLockSlim.ExitWriteLock();
+                semaphoreSlim.Release();
             }
         }
     }
