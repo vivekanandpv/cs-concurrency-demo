@@ -10,7 +10,7 @@ namespace ConcurrencyDemo
 {
     class Program
     {
-        private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(4);
+        private static Mutex mutex = new Mutex(false);
         static void Main(string[] args)
         {
             List<Thread> threads = new List<Thread>();
@@ -18,6 +18,7 @@ namespace ConcurrencyDemo
             for (int i = 0; i < 10; i++)
             {
                 threads.Add(new Thread(Foo));
+                //threads.Add(new Thread(FooTimeBound));
             }
 
             foreach (var thread in threads)
@@ -30,14 +31,30 @@ namespace ConcurrencyDemo
         {
             try
             {
-                semaphoreSlim.Wait();
+                mutex.WaitOne();
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is entering");
                 Thread.Sleep(1000);
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit");
             }
             finally
             {
-                semaphoreSlim.Release();
+                mutex.ReleaseMutex();
+            }
+        }
+
+        static void FooTimeBound()
+        {
+            if (!mutex.WaitOne(TimeSpan.FromSeconds(1), true))
+            {
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} could not get inside");
+
+            }
+            else
+            {
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is entering");
+                Thread.Sleep(2000);
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit");
+                mutex.ReleaseMutex();
             }
         }
     }
