@@ -19,7 +19,7 @@ namespace ConcurrencyDemo
                 Thread t = new Thread(() =>
                 {
                     //  the effect is more pronounced if the limit is set higher
-                    for (int j = 0; j < 10000; j++)
+                    for (int j = 0; j < 10_000_000; j++)
                     {
                         Counter++;  //  This is not an atomic operation!
                     }
