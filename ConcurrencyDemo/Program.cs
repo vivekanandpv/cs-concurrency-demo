@@ -37,6 +37,10 @@ namespace ConcurrencyDemo
             //  Even then, this behaviour is not predictable. Sometimes, the new thread
             //  might finish earlier than the main thread. In which case we can see the
             //  output to the console.
+
+            //  ThreadPool doesn't offer any mechanism for closure as Java's ExecutorService provides
+            //  If you need to wait till all the tasks are done in the pool, refer to this answer:
+            //  https://stackoverflow.com/a/2520212/3969961
             Thread.Sleep(1000);
         }
     }
