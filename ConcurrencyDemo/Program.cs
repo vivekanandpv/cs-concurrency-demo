@@ -44,17 +44,18 @@ namespace ConcurrencyDemo
 
         static void FooTimeBound()
         {
-            if (!mutex.WaitOne(TimeSpan.FromSeconds(1), true))
-            {
-                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} could not get inside");
+            bool lockAcquired = mutex.WaitOne(TimeSpan.FromSeconds(1), true);
 
-            }
-            else
+            if (lockAcquired)
             {
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is entering");
                 Thread.Sleep(2000);
                 Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is about to exit");
                 mutex.ReleaseMutex();
+            }
+            else
+            {
+                Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} could not get inside");
             }
         }
     }
